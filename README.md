@@ -57,3 +57,9 @@ Contributors
 
 * Mark Galloway
 * Abram Hindle
+
+Sources
+=======
+
+Author: Kenneth Reitz Source: https://github.com/kennethreitz/flask-sockets
+Author: Abram Hindle Source: https://github.com/abramhindle/WebSocketsExamples/blob/master/chat.py
