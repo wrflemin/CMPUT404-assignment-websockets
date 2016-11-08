@@ -20,6 +20,7 @@
         See the License for the specific language governing permissions and
         limitations under the License.
     "/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="json2.js"></script>
   </head>
   <body bgcolor="white" height="100%" width="100%">
@@ -124,7 +125,7 @@ function getPosition(e) {
 function addEntity(entity, data) {
     world[entity] = data;
     //drawNextFrame(); // (but should we?)
-    socket.send(JSON.stringify({entity:data})
+    socket.send(JSON.stringify({entity:data}));
 }
 var counter = 0;
 function addEntityWithoutName(data) {
@@ -254,7 +255,7 @@ function wsSetup() {
     socket = new WebSocket(url);
     socket.onopen = function() {
         //XXX: TODO What are you going to do here?
-        world = $.getJson(host+"/world")
+        world = $.getJSON("http://"+host+"/world");
     };
     socket.onerror = function(msg) {
         debug("WebSocket Error:" + msg.data);
