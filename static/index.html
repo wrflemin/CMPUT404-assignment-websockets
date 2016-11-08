@@ -134,18 +134,13 @@ function addEntity(entity, data) {
 var counter = 0;
 
 function addEntityWithoutName(data) {
-  var lineName = "X"+(counter++)%entityLimit;
-  var lineData = getLineData(lineName, data, counter);
-  addEntity(lineName, lineData);
   var name = "X"+(counter++)%entityLimit;
   addEntity(name,data);
   msg = {"name":name, "data":data};
-  msg2 = {"name":lineName, "data":lineData}
   socket.send(JSON.stringify(msg));
-  socket.send(JSON.stringify(msg2));
 }
 
-function getLineData(name, data, counter){
+function getLineData(data){
   var lineData = {};
   if (counter >1){
     var prev = counter - 2;
@@ -270,16 +265,21 @@ mouse = (function() {
 // Add the application specific mouse listeners!
 //XXX: TODO Make these prettier!
 mouse.mousedowners.push(function(x,y,clicked,e) {
-  addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
+  var data = {'x':x,'y':y,'colour':'blue'}
+  addEntityWithoutName(getLineData(data));
+  addEntityWithoutName(data);
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-  addEntityWithoutName({'x':x,'y':y,'colour':'red'});
+  var data = {'x':x,'y':y,'colour':'red'}
+  addEntityWithoutName(getLineData(data));
+  addEntityWithoutName(data);
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-  addEntityWithoutName({'x':x,'y':y,'colour':'lime',
-    'radius':10});
+  var data = {'x':x,'y':y,'colour':'lime','radius':10}
+  addEntityWithoutName(getLineData(data));
+  addEntityWithoutName(data);
 });
 
 
