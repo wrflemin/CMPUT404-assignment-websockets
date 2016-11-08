@@ -92,7 +92,6 @@ def read_ws(ws,client):
             print "WS RECV: %s" % msg
             if (msg is not None):
                 packet = json.loads(msg)
-		#set_listener(packet.name, packet.data)
                 send_all_json( packet )
             else:
                 break

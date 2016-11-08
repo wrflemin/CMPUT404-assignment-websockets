@@ -1,12 +1,12 @@
 <!DOCTYPE HTML>
 <html>
-<head>
-<title>Websockets Assignment</title>
-<meta charset="utf-8" />
-<meta content='width=device-width; height=device-height; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' />
-<meta name="viewport" content="width=device-width" />
-<meta name="license" content="
-Copyright 2013 Google, Abram Hindle
+  <head>
+    <title>Websockets Assignment</title>
+    <meta charset="utf-8" />
+    <meta content='width=device-width; height=device-height; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="license" content="
+    Copyright 2013 Google, Abram Hindle
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,31 +16,32 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
-	    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	    See the License for the specific language governing permissions and
-	    limitations under the License.
-	    "/>
-	    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-	    <script src="json2.js"></script>
-	    </head>
-	    <body bgcolor="white" height="100%" width="100%">
-	    <div id="debug"></div>
-	    <canvas id="c" width="100%" height="100%" style="-webkit-tap-highlight-color: transparent;"></canvas>
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="json2.js"></script>
+  </head>
+  <body bgcolor="white" height="100%" width="100%">
+    <div id="debug"></div>
+    <canvas id="c" width="100%" height="100%" style="-webkit-tap-highlight-color: transparent;"></canvas>
 
-	    <script>
-	    // Fix me
-	    var canvas = document.getElementById('c');
-	    var host = window.location.host;
-	    var context = canvas.getContext("2d");
-	    var W = canvas.width  = window.innerWidth-6;
-	    var H = canvas.height = window.innerHeight-50;
-	    var wscounter = 0;
-	    var socket;
+    <script>
+// Fix me
+var canvas = document.getElementById('c');
+var host = window.location.host;
+var context = canvas.getContext("2d");
+var W = canvas.width  = window.innerWidth-6;
+var H = canvas.height = window.innerHeight-50;
+var wscounter = 0;
+var socket;
+var entityLimit = 150;
 
-	    function debug(str) {
-	      var debugDiv = document.getElementById('debug');
-	      debugDiv.innerHTML = "" + str;
-	    }
+function debug(str) {
+  var debugDiv = document.getElementById('debug');
+  debugDiv.innerHTML = "" + str;
+}
 debug("Test");
 
 world = {};
@@ -84,7 +85,11 @@ function renderFrame() {
   clearFrame();
   for (var key in world) {
     var entity = world[key];
-    drawCircle(context,prepEntity(entity));
+    if (!entity["startX"]){
+      drawCircle(context,prepEntity(entity));
+    } else{
+      drawLine(entity);
+    }
   }
 }
 
@@ -127,11 +132,43 @@ function addEntity(entity, data) {
   drawNextFrame(); // (but should we?)
 }
 var counter = 0;
+
 function addEntityWithoutName(data) {
-  var name = "X"+(counter++)%100;
-  msg = {"name":name, "data":data};
-  socket.send(JSON.stringify(msg));
+  var lineName = "X"+(counter++)%entityLimit;
+  var lineData = getLineData(lineName, data, counter);
+  addEntity(lineName, lineData);
+  var name = "X"+(counter++)%entityLimit;
   addEntity(name,data);
+  msg = {"name":name, "data":data};
+  msg2 = {"name":lineName, "data":lineData}
+  socket.send(JSON.stringify(msg));
+  socket.send(JSON.stringify(msg2));
+}
+
+function getLineData(name, data, counter){
+  var lineData = {};
+  if (counter >1){
+    var prev = counter - 2;
+    var previousNodeName = "X" + (prev)%entityLimit;
+    console.log(world);
+    lineData['startX'] = world[previousNodeName].x;
+    lineData['startY'] = world[previousNodeName].y;
+    lineData['x'] = data.x;
+    lineData['y'] = data.y;
+  }
+  return lineData;
+}
+
+function drawLine(entity){
+  with(context){
+    beginPath();
+    moveTo(entity.startX,entity.startY);
+    lineTo(entity.x, entity.y);
+    lineWidth = 3;
+    fillStyle = "lime";
+    strokeStyle = fillStyle;
+    stroke();
+  }   
 }
 
 // canvas + mouse/touch is complicated
@@ -241,7 +278,7 @@ mouse.mouseuppers.push(function(x,y,clicked,e) {
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-  addEntityWithoutName({'x':x,'y':y,'colour':'green',
+  addEntityWithoutName({'x':x,'y':y,'colour':'lime',
     'radius':10});
 });
 
@@ -268,7 +305,6 @@ function wsSetup() {
   socket.onmessage = function(msg) {
     try {
       //XXX: TODO What are you going to do here?
-      debug("WebSocket Recv:" + msg.data);
       var msgJson = JSON.parse(msg.data);
       addEntity(msgJson.name, msgJson.data);//but should we?
       drawNextFrame()
@@ -287,6 +323,6 @@ wsSetup();
 setInterval( update, 1000/30.0);
 
 
-</script>
-</body>
+    </script>
+  </body>
 </html>
