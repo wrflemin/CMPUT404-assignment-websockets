@@ -36,7 +36,10 @@ var W = canvas.width  = window.innerWidth-6;
 var H = canvas.height = window.innerHeight-50;
 var wscounter = 0;
 var socket;
-var entityLimit = 150;
+var entityLimit = 1000;
+var dragRadius = dragRadiusDefault = 5;
+var dragX;
+var dragY;
 
 function debug(str) {
   var debugDiv = document.getElementById('debug');
@@ -268,16 +271,25 @@ mouse.mousedowners.push(function(x,y,clicked,e) {
   var data = {'x':x,'y':y,'colour':'blue'}
   addEntityWithoutName(getLineData(data));
   addEntityWithoutName(data);
+  dragRadius = dragRadiusDefault;
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
   var data = {'x':x,'y':y,'colour':'red'}
   addEntityWithoutName(getLineData(data));
   addEntityWithoutName(data);
+  dragRadius = dragRadiusDefault;
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-  var data = {'x':x,'y':y,'colour':'lime','radius':10}
+  if (dragRadius == dragRadiusDefault){
+	dragX = x;
+	dragY = y;
+  }
+  if (dragRadius < 200){
+    dragRadius += 5;
+  }
+  var data = {'x':dragX,'y':dragY,'colour':'lime','radius':dragRadius}
   addEntityWithoutName(getLineData(data));
   addEntityWithoutName(data);
 });
