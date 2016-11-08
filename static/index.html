@@ -124,12 +124,13 @@ function getPosition(e) {
 
 function addEntity(entity, data) {
     world[entity] = data;
-    //drawNextFrame(); // (but should we?)
-    socket.send(JSON.stringify({entity:data}));
+    drawNextFrame(); // (but should we?)
 }
 var counter = 0;
 function addEntityWithoutName(data) {
     var name = "X"+(counter++)%100;
+    msg = {"name":name, "data":data};
+    socket.send(JSON.stringify(msg));
     addEntity(name,data);
 }
 
@@ -256,14 +257,18 @@ function wsSetup() {
     socket.onopen = function() {
         //XXX: TODO What are you going to do here?
         world = $.getJSON("http://"+host+"/world");
+	drawNextFrame()
     };
     socket.onerror = function(msg) {
         debug("WebSocket Error:" + msg.data);
     };
     socket.onmessage = function(msg) {
         try {
-            debug("WebSocket Recv:" + msg.data);
             //XXX: TODO What are you going to do here?
+	    debug("WebSocket Recv:" + msg.data);
+	    var msgJson = JSON.parse(msg.data);
+	    addEntity(msgJson.name, msgJson.data);//but should we?
+	    drawNextFrame()
         } catch (e) {
             alert("socket on message: " + e);
         }

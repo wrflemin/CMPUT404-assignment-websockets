@@ -75,6 +75,7 @@ myWorld = World()
 
 def set_listener( entity, data ):
     ''' do something with the update ! '''
+    myWorld.set(entity, data)
 
 myWorld.add_set_listener( set_listener )
 
@@ -91,6 +92,7 @@ def read_ws(ws,client):
             print "WS RECV: %s" % msg
             if (msg is not None):
                 packet = json.loads(msg)
+		#set_listener(packet.name, packet.data)
                 send_all_json( packet )
             else:
                 break
@@ -117,7 +119,7 @@ def subscribe_socket(ws):
             # block here
             msg = client.get()
             ws.send(msg)
-    except WebSocketError as e:
+    except Exception as e:
         print "WS Error %s" % e
     finally:
         clients.remove(client)
