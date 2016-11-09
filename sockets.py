@@ -75,7 +75,7 @@ myWorld = World()
 
 def set_listener( entity, data ):
     ''' do something with the update ! '''
-    send_all_json({"name":entity, "data":data})
+    send_all_json({entity:data})
 
 myWorld.add_set_listener( set_listener )
 
@@ -92,7 +92,7 @@ def read_ws(ws,client):
             print "WS RECV: %s" % msg
             if (msg is not None):
                 packet = json.loads(msg)
-                myWorld.set(packet['name'], packet['data'])
+                myWorld.set(packet.keys()[0], packet.values()[0])
             else:
                 break
     except Exception as e:
