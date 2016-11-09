@@ -50,7 +50,6 @@ function debug(str) {
   var debugDiv = document.getElementById('debug');
   debugDiv.innerHTML = "" + str;
 }
-debug("Test");
 
 world = {};
 
@@ -144,7 +143,8 @@ var counter = 0;
 function addEntityWithoutName(data) {
   var name = "X"+(counter++)%entityLimit;
   addEntity(name,data);
-  msg = {"name":name, "data":data};
+  var msg = {};
+  msg[name] = data;
   socket.send(JSON.stringify(msg));
 }
 
@@ -217,7 +217,6 @@ mouse = (function() {
 	var y = pos[1];
 	self.clicked = 1;
 	self.callListeners(self.mousedowners,x,y,self.clicked,e);
-	//addEntityWithoutName({'x':x,'y':y,'colour':'red'});
       }
     },
     mouseup: function(e) {
@@ -231,7 +230,6 @@ mouse = (function() {
 	self.clicked = 0;
 	self.selected = -1;
 	self.callListeners(self.mouseuppers,x,y,self.clicked,e);
-	//addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
       }
     },
     touchstart: function(e) {
@@ -348,7 +346,8 @@ function wsSetup() {
     try {
       //XXX: TODO What are you going to do here?
       var msgJson = JSON.parse(msg.data);
-      addEntity(msgJson.name, msgJson.data);//but should we?
+      var entityName = Object.keys(msgJson)[0];
+      addEntity(entityName, msgJson[entityName]);//but should we?
       drawNextFrame()
     } catch (e) {
       alert("socket on message: " + e);
