@@ -75,7 +75,7 @@ myWorld = World()
 
 def set_listener( entity, data ):
     ''' do something with the update ! '''
-    myWorld.set(entity, data)
+    send_all_json({"name":entity, "data":data})
 
 myWorld.add_set_listener( set_listener )
 
@@ -92,12 +92,14 @@ def read_ws(ws,client):
             print "WS RECV: %s" % msg
             if (msg is not None):
                 packet = json.loads(msg)
-                send_all_json( packet )
+                myWorld.set(packet['name'], packet['data'])
             else:
                 break
-    except:
+    except Exception as e:
         '''Done'''
-    return None
+        # Catch all exceptions are evil, especially when they don't even return an 
+        # error message.
+        print "Errored with: ", e
 
 def send_all(msg):
     for client in clients:
@@ -123,7 +125,6 @@ def subscribe_socket(ws):
     finally:
         clients.remove(client)
         gevent.kill(g)
-    return None
 
 
 def flask_post_json():
