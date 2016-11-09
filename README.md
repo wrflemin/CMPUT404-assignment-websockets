@@ -54,7 +54,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 Contributors
 ============
-
+* Wyatt Fleming
+* Alex Makepeace
 * Mark Galloway
 * Abram Hindle
 
