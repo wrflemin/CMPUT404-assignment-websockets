@@ -41,6 +41,10 @@ var dragRadius = dragRadiusDefault = 5;
 var dragX;
 var dragY;
 var recursionDepth = 5;
+var colourLimit = 100;
+var R = 100;
+var G = 100;
+var B = 100;
 
 function debug(str) {
   var debugDiv = document.getElementById('debug');
@@ -151,8 +155,8 @@ function getLineData(data, offset, frozen){
   var previousEntity = world[previousNodeName];
   if (frozen%entityLimit >= recursionDepth){
     if (previousEntity['radius']){
-	lineData['startX'] = previousEntity.x;
-    	lineData['startY'] = previousEntity.y;
+	   lineData['startX'] = previousEntity.x;
+    	   lineData['startY'] = previousEntity.y;
     } else {
 	lineData['startX'] = previousEntity.startX;
 	lineData['startY'] = previousEntity.startY;
@@ -169,7 +173,7 @@ function drawLine(entity){
     moveTo(entity.startX,entity.startY);
     lineTo(entity.x, entity.y);
     lineWidth =1;
-    fillStyle = "lime";
+    fillStyle = entity['colour'];
     strokeStyle = fillStyle;
     stroke();
   }   
@@ -284,16 +288,12 @@ function addLineEntities(data){
 // Add the application specific mouse listeners!
 //XXX: TODO Make these prettier!
 mouse.mousedowners.push(function(x,y,clicked,e) {
-  var data = {'x':x,'y':y,'colour':'blue', 'radius':dragRadiusDefault};
+  changeRGBValues();
+  var colour = "rgb("+R+","+G+","+B+")"
+  var data = {'x':x,'y':y,'colour':colour, 'radius':dragRadiusDefault};
   addLineEntities(data);
   addEntityWithoutName(data);
   dragRadius = dragRadiusDefault;
-});
-
-mouse.mouseuppers.push(function(x,y,clicked,e) {
-  //var data = {'x':x,'y':y,'colour':'red'};
-  //addEntityWithoutName(data);
-  //dragRadius = dragRadiusDefault;
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
@@ -303,11 +303,28 @@ mouse.mousedraggers.push(function(x,y,clicked,e) {
   }
   if (dragRadius < 200){
     dragRadius += 5;
-    var data = {'x':dragX,'y':dragY,'colour':'lime','radius':dragRadius};
+    changeRGBValues();
+    var colour = "rgb("+R+","+G+","+B+")"
+    var data = {'x':dragX,'y':dragY,'colour':colour,'radius':dragRadius};
     addEntityWithoutName(data);
   }
 });
 
+function changeRGBValues(){
+    if (R < 255 && G < 255 && B < 255){
+	++R;
+    } else if (G < 255 && B < 255){
+	++G;
+    } else if (B < 255){
+	++B;
+    } else if (R > 100){
+	--R;
+    } else if (G > 100){
+	--G;
+    } else {
+	R = G = B = 100;
+    }
+}
 
 function update() {
   drawFrame();
