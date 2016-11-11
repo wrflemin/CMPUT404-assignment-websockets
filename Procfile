@@ -1,1 +1,1 @@
-web: gunicorn
+web: bash run.sh
