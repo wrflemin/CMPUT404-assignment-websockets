@@ -330,7 +330,7 @@ function update() {
 
 
 function wsSetup() {
-  var url = "ws://"+host+"/subscribe";
+  var url = "wss://"+host+"/subscribe";
   socket = new WebSocket(url);
   socket.onopen = function() {
     //XXX: TODO What are you going to do here?
